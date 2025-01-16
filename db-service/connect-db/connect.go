@@ -1,0 +1,5 @@
+package connectdb
+
+func InitDB() {
+
+}
