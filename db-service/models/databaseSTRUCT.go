@@ -8,3 +8,7 @@ type DatabaseCONFIG struct {
 	DBName   string `yaml:"dbname"`
 	SSLMode  string `yaml:"sslmode"`
 }
+
+type Config struct {
+	Database DatabaseCONFIG `yaml:"database"`
+}
