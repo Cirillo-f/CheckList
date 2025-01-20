@@ -12,3 +12,9 @@ type DatabaseCONFIG struct {
 type Config struct {
 	Database DatabaseCONFIG `yaml:"database"`
 }
+
+type Task struct {
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Status      string `json:"status"`
+}
