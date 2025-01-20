@@ -25,7 +25,7 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 	// Проходимся по ответу от базы данных
 	for ROWS.Next() {
 		var t models.Task
-		err := ROWS.Scan(&t.Title, &t.Description, &t.Status)
+		err := ROWS.Scan(&t.ID, &t.Title, &t.Description, &t.Status)
 		if err != nil {
 			log.Println("[ERROR]:Ошибка сканирования.", err)
 			return
