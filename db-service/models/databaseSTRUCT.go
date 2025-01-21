@@ -19,3 +19,8 @@ type Task struct {
 	Description string `json:"description"`
 	Status      string `json:"status"`
 }
+
+type MessageNewTask struct {
+	Text    string `json:"text"`
+	NewTask string `json:"newtask"`
+}
