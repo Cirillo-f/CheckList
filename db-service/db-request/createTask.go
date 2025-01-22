@@ -30,9 +30,9 @@ func CreateNewTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Создаем сообщение о новой добавленной задаче
-	var message models.MessageNewTask = models.MessageNewTask{
-		Text:    "[SUCCES]:Добавлена новая задача",
-		NewTask: newTask.Title,
+	var message models.MessageNewTS = models.MessageNewTS{
+		Text:  "[SUCCES]:Добавлена новая задача",
+		NewTS: newTask.Title,
 	}
 
 	// Возвращаем пользователю сообщение

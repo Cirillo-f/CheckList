@@ -20,7 +20,20 @@ type Task struct {
 	Status      string `json:"status"`
 }
 
-type MessageNewTask struct {
-	Text    string `json:"text"`
-	NewTask string `json:"newtask"`
+type MessageNewTS struct {
+	Text  string `json:"text"`
+	NewTS string `json:"newtask"` //New task/status
+}
+
+type UpdateStatus struct {
+	ID        int    `json:"id"`
+	NewStatus string `json:"newstatus"`
+}
+
+type DoneTask struct {
+	ID int `json:"id"`
+}
+
+type DoneMessage struct {
+	Text string `json:"text"`
 }
