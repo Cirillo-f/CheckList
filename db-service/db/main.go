@@ -17,7 +17,7 @@ func main() {
 	dbAPP := chi.NewRouter()
 	dbAPP.Use(middleware.LogMiddleware)
 
-	dbAPP.Get("/lists", dbrequest.GetTasks)
+	dbAPP.Get("/list", dbrequest.GetTasks)
 	dbAPP.Post("/create", dbrequest.CreateNewTask)
 	dbAPP.Put("/changeStatus", dbrequest.PutStatus)
 	dbAPP.Delete("/done", dbrequest.DoneTask)
