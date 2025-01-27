@@ -17,14 +17,14 @@ func main() {
 	dbAPP := chi.NewRouter()
 	dbAPP.Use(middleware.LogMiddleware)
 
-	dbAPP.Get("/list", dbrequest.GetTasks)
-	dbAPP.Post("/create", dbrequest.CreateNewTask)
-	dbAPP.Put("/changeStatus", dbrequest.PutStatus)
-	dbAPP.Delete("/done", dbrequest.DoneTask)
+	dbAPP.Get("/list", dbrequest.GetList)
+	dbAPP.Post("/create", dbrequest.Create)
+	dbAPP.Put("/done", dbrequest.DoneTask)
+	dbAPP.Delete("/delete", dbrequest.DeleteTask)
 
 	log.Println("DB-service is listening on$ http://localhost:8081")
 	err := http.ListenAndServe(":8081", dbAPP)
 	if err != nil {
-		log.Fatal("[ERROR]:", err)
+		log.Fatal("[ERROR]:Ошибка запуска сервера.", err)
 	}
 }

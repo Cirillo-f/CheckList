@@ -13,11 +13,15 @@ func main() {
 	router := chi.NewRouter()
 
 	router.Use(middleware.LogMiddleware)
+
 	router.Get("/list", handlers.GetList)
+	router.Post("/create", handlers.CreateTask)
+	router.Put("/done", handlers.DoneTask)
+	router.Delete("/delete", handlers.DeleteTask)
 
 	log.Println("Сервер запущен на http://localhost:8080")
 	err := http.ListenAndServe(":8080", router)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("[ERROR]:Ошибка запуска сервера.", err)
 	}
 }

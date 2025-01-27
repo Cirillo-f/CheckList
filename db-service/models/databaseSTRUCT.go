@@ -25,15 +25,15 @@ type MessageNewTS struct {
 	NewTS string `json:"newtask"` //New task/status
 }
 
-type UpdateStatus struct {
+type DoneStatus struct {
 	ID        int    `json:"id"`
 	NewStatus string `json:"newstatus"`
 }
 
-type DoneTask struct {
+type DeleteIDTask struct {
 	ID int `json:"id"`
 }
 
-type DoneMessage struct {
+type DeleteTaskMessage struct {
 	Text string `json:"text"`
 }
