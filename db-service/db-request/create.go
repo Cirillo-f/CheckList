@@ -10,7 +10,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func CreateNewTask(w http.ResponseWriter, r *http.Request) {
+// [POST] /create
+func Create(w http.ResponseWriter, r *http.Request) {
 	// Декодируем запрос
 	var newTask models.Task
 	err := json.NewDecoder(r.Body).Decode(&newTask)

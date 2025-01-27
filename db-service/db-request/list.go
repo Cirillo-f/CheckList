@@ -9,7 +9,8 @@ import (
 	"github.com/Cirillo-f/CheckList/db-service/models"
 )
 
-func GetTasks(w http.ResponseWriter, r *http.Request) {
+// [GET] /list
+func GetList(w http.ResponseWriter, r *http.Request) {
 	// Здесь будем хранить результат запроса
 	var tasks []models.Task
 

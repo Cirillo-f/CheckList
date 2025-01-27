@@ -6,30 +6,34 @@ import (
 	"net/http"
 )
 
+// [GET] /list
 func GetList(w http.ResponseWriter, r *http.Request) {
-	request := "http://localhost:8081/list"
+	// URL для получения списка задач из DB-сервиса
+	URL := "http://localhost:8081/list"
 
-	resp, err := http.Get(request)
+	// Отправляем GET-запрос к DB-сервису
+	resp, err := http.Get(URL)
 	if err != nil {
-		log.Println("[ERROR]: Failed to contact db service", err)
-		http.Error(w, "Unadle to contact database service", http.StatusInternalServerError)
+		log.Println("[ERROR]: Ошибка при обращении к DB-сервису:", err)
+		http.Error(w, "Не удалось подключиться к DB-сервису", http.StatusInternalServerError)
 		return
 	}
-
 	defer resp.Body.Close()
 
+	// Проверяем статус ответа от DB-сервиса
 	if resp.StatusCode != http.StatusOK {
-		log.Println("[ERROR]: DB service return wrong status.", resp.StatusCode)
-		http.Error(w, "Database service ERROR.", http.StatusInternalServerError)
+		log.Printf("[ERROR]: DB-сервис вернул ошибку: %s\n", resp.Status)
+		http.Error(w, "Ошибка на стороне DB-сервиса", resp.StatusCode)
 		return
 	}
 
+	// Отправляем ответ клиенту
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	_, err = io.Copy(w, resp.Body)
 	if err != nil {
-		log.Println("[ERROR]: Failed to write response.", err)
-		http.Error(w, "Failed to send response.", http.StatusInternalServerError)
+		log.Println("[ERROR]: Ошибка при отправке ответа клиенту:", err)
+		http.Error(w, "Не удалось отправить ответ", http.StatusInternalServerError)
 		return
 	}
 }

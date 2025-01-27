@@ -10,9 +10,10 @@ import (
 	"github.com/Cirillo-f/CheckList/db-service/models"
 )
 
-func DoneTask(w http.ResponseWriter, r *http.Request) {
+// [DELETE] /delete
+func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	// Декодируем
-	var taskID models.DoneTask
+	var taskID models.DeleteIDTask
 	err := json.NewDecoder(r.Body).Decode(&taskID)
 	if err != nil {
 		log.Println()
@@ -37,7 +38,7 @@ func DoneTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Составляем сообщение о том какую запись пользователь собирается удалить
-	var message models.DoneMessage = models.DoneMessage{
+	var message models.DeleteTaskMessage = models.DeleteTaskMessage{
 		Text: "[SUCCES]:Задача " + task.Title + " успешно завершена",
 	}
 
