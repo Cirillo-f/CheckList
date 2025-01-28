@@ -1,10 +1,13 @@
 package handlers
 
 import (
+	"bytes"
 	"encoding/json"
-	"github.com/Cirillo-f/CheckList/api-service/models"
+	"io"
 	"log"
 	"net/http"
+
+	"github.com/Cirillo-f/CheckList/api-service/models"
 )
 
 // [DELETE] /delete
@@ -21,6 +24,54 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	//URL := "http://localhost:8081/delete"
+	// Создаем URL к которому мы будем делать DELETE запрос
+	URL := "http://localhost:8081/delete"
 
+	// При помощи Marshal сериализуем пременную task_id
+	jsonIdTask, err := json.Marshal(task_id)
+	if err != nil {
+		log.Println("[ERROR]: Ошибка сериализации JSON:", err)
+		http.Error(w, "Ошибка обработки данных", http.StatusBadRequest)
+		return
+	}
+
+	// Создаем DELETE запрос
+	request, err := http.NewRequest("DELETE", URL, bytes.NewBuffer(jsonIdTask))
+	if err != nil {
+		log.Println("[ERROR]:", err)
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	// Устанавливаем заголовок чтобы сервер к которому мы делаем запрос понимал какой тип данных ему предстоит парсить
+	request.Header.Set("Content-Type", "application/json")
+
+	// Создаем http Клиент который будет отвечать за совершение запроса к DB-сервису
+	client := &http.Client{}
+
+	// Совершаем запрос через наш новый http.Client
+	resp, err := client.Do(request)
+	if err != nil {
+		log.Println("[ERROR]: Ошибка выполнения HTTP-запроса:", err)
+		http.Error(w, "Ошибка при выполнении запроса к серверу", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	// Проверяем статус ответа от сервера
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("[ERROR]: Сервер вернул ошибку: %s\n", resp.Status)
+		http.Error(w, "Ошибка на стороне сервера", resp.StatusCode)
+		return
+	}
+
+	// Отправляем пользователю ответ
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	_, err = io.Copy(w, resp.Body)
+	if err != nil {
+		log.Println("[ERROR]: Ошибка копирования тела ответа:", err)
+		http.Error(w, "Ошибка при формировании ответа", http.StatusInternalServerError)
+		return
+	}
 }

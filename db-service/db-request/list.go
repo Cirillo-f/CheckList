@@ -14,32 +14,43 @@ func GetList(w http.ResponseWriter, r *http.Request) {
 	// Здесь будем хранить результат запроса
 	var tasks []models.Task
 
-	// Запрос к бд
+	// Запрос к базе данных
 	request := `SELECT * FROM tasks;`
 
-	//Совершаем запрос
+	// Выполняем запрос
 	ROWS, err := connectdb.DB.Query(request)
 	if err != nil {
-		log.Println("[ERROR]:Ошибка выполнения SQL-запроса.", err)
+		log.Println("[ERROR]: Ошибка выполнения SQL-запроса:", err)
+		http.Error(w, "Ошибка при получении списка задач. Попробуйте позже.", http.StatusInternalServerError)
+		return
 	}
+	defer ROWS.Close() // Закрываем rows после завершения работы
 
-	// Проходимся по ответу от базы данных
+	// Обрабатываем результаты запроса
 	for ROWS.Next() {
 		var t models.Task
 		err := ROWS.Scan(&t.ID, &t.Title, &t.Description, &t.Status)
 		if err != nil {
-			log.Println("[ERROR]:Ошибка сканирования.", err)
+			log.Println("[ERROR]: Ошибка сканирования строки из базы данных:", err)
+			http.Error(w, "Ошибка при обработке данных задач. Попробуйте позже.", http.StatusInternalServerError)
 			return
 		}
 		tasks = append(tasks, t)
 	}
 
-	// Кодируем и отправляем пользователю
-	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(tasks)
-	if err != nil {
-		log.Println("[ERROR]:Ошибка сериализации.")
+	// Проверяем наличие ошибок при итерации по строкам
+	if err = ROWS.Err(); err != nil {
+		log.Println("[ERROR]: Ошибка при чтении строк из базы данных:", err)
+		http.Error(w, "Ошибка при чтении данных задач. Попробуйте позже.", http.StatusInternalServerError)
 		return
 	}
 
+	// Кодируем результат в JSON и отправляем пользователю
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(tasks)
+	if err != nil {
+		log.Println("[ERROR]: Ошибка сериализации ответа:", err)
+		http.Error(w, "Ошибка при формировании ответа. Попробуйте позже.", http.StatusInternalServerError)
+		return
+	}
 }

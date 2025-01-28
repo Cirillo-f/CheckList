@@ -10,53 +10,56 @@ import (
 	"github.com/Cirillo-f/CheckList/db-service/models"
 )
 
-// [DELETE] /delete
+// DB-Service: [DELETE] /delete
 func DeleteTask(w http.ResponseWriter, r *http.Request) {
-	// Декодируем
+	// Декодируем ID задачи из тела запроса
 	var taskID models.DeleteIDTask
 	err := json.NewDecoder(r.Body).Decode(&taskID)
 	if err != nil {
-		log.Println()
+		log.Println("[ERROR]: Ошибка декодирования тела запроса:", err)
+		http.Error(w, "Некорректный формат данных. Проверьте JSON.", http.StatusBadRequest)
 		return
 	}
 
-	// Создаем переменную в которой будем хранить значение
+	// Создаем переменную для хранения информации о задаче
 	var task models.Task
 
-	// Создаем запрос на получение таски которую мы хотим удалить для вывода информации
-	selectRequest := `SELECT * FROM tasks where ID=$1;`
+	// Запрос на получение информации о задаче, которую нужно удалить
+	selectRequest := `SELECT * FROM tasks WHERE ID=$1;`
 	err = connectdb.DB.QueryRow(selectRequest, taskID.ID).Scan(&task.ID, &task.Title, &task.Description, &task.Status)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			// Если запись не найдена выполнить следующее
-			log.Println("[ERROR]:Запись не найдена.", err)
+			// Если запись не найдена
+			log.Println("[ERROR]: Задача с указанным ID не найдена:", err)
+			http.Error(w, "Задача с указанным ID не найдена.", http.StatusNotFound)
 			return
 		}
-		// Если возникла какая-либо другая ошибка
-		log.Println("[ERROR]:Ошибка выполнения запроса.", err)
+		// Если произошла другая ошибка
+		log.Println("[ERROR]: Ошибка выполнения запроса на получение задачи:", err)
+		http.Error(w, "Ошибка при получении данных задачи. Попробуйте позже.", http.StatusInternalServerError)
 		return
 	}
 
-	// Составляем сообщение о том какую запись пользователь собирается удалить
+	// Формируем сообщение о задаче, которую пользователь собирается удалить
 	var message models.DeleteTaskMessage = models.DeleteTaskMessage{
-		Text: "[SUCCES]:Задача " + task.Title + " успешно завершена",
+		Text: "[SUCCESS]: Задача \"" + task.Title + "\" успешно удалена.",
 	}
 
-	// Создаем запрос удаления
-	deleteRequest := `DELETE FROM tasks WHERE id=$1;`
-
-	// Выполняем запрос
+	// Запрос на удаление задачи
+	deleteRequest := `DELETE FROM tasks WHERE ID=$1;`
 	_, err = connectdb.DB.Exec(deleteRequest, taskID.ID)
 	if err != nil {
-		log.Println("[ERROR]:Ошибка выполнения запроса.", err)
+		log.Println("[ERROR]: Ошибка выполнения запроса на удаление задачи:", err)
+		http.Error(w, "Ошибка при удалении задачи. Попробуйте позже.", http.StatusInternalServerError)
 		return
 	}
 
-	// Выводим сообщение пользователю о том что задача завершена(удалена)
+	// Возвращаем сообщение об успешном удалении
 	w.Header().Set("Content-Type", "application/json")
 	err = json.NewEncoder(w).Encode(message)
 	if err != nil {
-		log.Println("[ERROR]:Ошибка десериализации.", err)
+		log.Println("[ERROR]: Ошибка сериализации ответа:", err)
+		http.Error(w, "Ошибка при формировании ответа. Попробуйте позже.", http.StatusInternalServerError)
 		return
 	}
 }

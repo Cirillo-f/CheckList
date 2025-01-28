@@ -27,7 +27,7 @@ func DoneTask(w http.ResponseWriter, r *http.Request) {
 	// Создаем URL к которому мы будем делать пост запрос
 	URL := "http://localhost:8081/done"
 
-	// При помощи Marshal сериализуем переменную id_task
+	// При помощи Marshal сериализуем переменную dStatus
 	jsonIdTask, err := json.Marshal(dStatus)
 	if err != nil {
 		log.Println("[ERROR]: Ошибка сериализации JSON:", err)
