@@ -10,7 +10,7 @@ import (
 )
 
 // [GET] /list
-func GetList(w http.ResponseWriter, r *http.Request) {
+func GetList(w http.ResponseWriter, _ *http.Request) {
 	// Здесь будем хранить результат запроса
 	var tasks []models.Task
 
@@ -24,12 +24,16 @@ func GetList(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Ошибка при получении списка задач. Попробуйте позже.", http.StatusInternalServerError)
 		return
 	}
-	defer ROWS.Close() // Закрываем rows после завершения работы
 
+	defer func() {
+		if err = ROWS.Close(); err != nil {
+			log.Println("[ERROR]: Ошибка во время закрытия соединения!", err)
+		}
+	}()
 	// Обрабатываем результаты запроса
 	for ROWS.Next() {
 		var t models.Task
-		err := ROWS.Scan(&t.ID, &t.Title, &t.Description, &t.Status)
+		err = ROWS.Scan(&t.ID, &t.Title, &t.Description, &t.Status)
 		if err != nil {
 			log.Println("[ERROR]: Ошибка сканирования строки из базы данных:", err)
 			http.Error(w, "Ошибка при обработке данных задач. Попробуйте позже.", http.StatusInternalServerError)

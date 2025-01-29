@@ -21,7 +21,11 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Некорректный формат данных в запросе", http.StatusBadRequest)
 		return
 	}
-	defer r.Body.Close()
+	defer func() {
+		if err = r.Body.Close(); err != nil {
+			log.Println("[ERROR]: Ошибка во время закрытия соединения!", err)
+		}
+	}()
 
 	// Сериализуем newTask в JSON
 	jsonNewTask, err := json.Marshal(newTask)
@@ -41,7 +45,11 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Ошибка при обращении к DB-сервису", http.StatusInternalServerError)
 		return
 	}
-	defer resp.Body.Close()
+	defer func() {
+		if err = resp.Body.Close(); err != nil {
+			log.Println("[ERROR]: Ошибка во время закрытия соединения!", err)
+		}
+	}()
 
 	// Проверяем статус ответа от DB-сервиса
 	if resp.StatusCode != http.StatusOK {

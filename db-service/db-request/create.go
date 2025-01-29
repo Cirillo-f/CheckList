@@ -7,7 +7,6 @@ import (
 
 	connectdb "github.com/Cirillo-f/CheckList/db-service/connect-db"
 	"github.com/Cirillo-f/CheckList/db-service/models"
-	_ "github.com/lib/pq"
 )
 
 // [POST] /create

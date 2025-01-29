@@ -7,7 +7,7 @@ import (
 )
 
 // [GET] /list
-func GetList(w http.ResponseWriter, r *http.Request) {
+func GetList(w http.ResponseWriter, _ *http.Request) {
 	// URL для получения списка задач из DB-сервиса
 	URL := "http://localhost:8081/list"
 
@@ -18,7 +18,12 @@ func GetList(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Не удалось подключиться к DB-сервису", http.StatusInternalServerError)
 		return
 	}
-	defer resp.Body.Close()
+
+	defer func() {
+		if err = resp.Body.Close(); err != nil {
+			log.Println("[ERROR]: Ошибка во время закрытия соединения!", err)
+		}
+	}()
 
 	// Проверяем статус ответа от DB-сервиса
 	if resp.StatusCode != http.StatusOK {
