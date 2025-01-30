@@ -12,7 +12,11 @@ import (
 
 func main() {
 	connectdb.InitDB()
-	defer connectdb.DB.Close()
+	defer func() {
+		if err := connectdb.DB.Close(); err != nil {
+			log.Println("[ERROR]: Ошибка во закрытии соединения!", err)
+		}
+	}()
 
 	dbAPP := chi.NewRouter()
 	dbAPP.Use(middleware.LogMiddleware)

@@ -3,10 +3,14 @@ package connectdb
 import (
 	"database/sql"
 	"fmt"
+
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
+
 	"log"
 	"os"
+
+	// Это драйвер SQL который мы импортируем чтобы работать с Базой
+	_ "github.com/lib/pq"
 )
 
 var DB *sql.DB

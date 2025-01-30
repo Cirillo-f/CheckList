@@ -22,13 +22,18 @@ func DoneTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Некорректный формат данных", http.StatusBadRequest)
 		return
 	}
-	defer r.Body.Close()
+
+	defer func() {
+		if err = r.Body.Close(); err != nil {
+			log.Println("[ERROR]: Ошибка во время закрытия соединения!", err)
+		}
+	}()
 
 	// Создаем URL к которому мы будем делать пост запрос
 	URL := "http://localhost:8081/done"
 
 	// При помощи Marshal сериализуем переменную dStatus
-	jsonIdTask, err := json.Marshal(dStatus)
+	jsonIDTask, err := json.Marshal(dStatus)
 	if err != nil {
 		log.Println("[ERROR]: Ошибка сериализации JSON:", err)
 		http.Error(w, "Ошибка обработки данных", http.StatusInternalServerError)
@@ -36,7 +41,7 @@ func DoneTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Создаем PUT /done запрос
-	request, err := http.NewRequest("PUT", URL, bytes.NewBuffer(jsonIdTask))
+	request, err := http.NewRequest("PUT", URL, bytes.NewBuffer(jsonIDTask))
 	if err != nil {
 		log.Println("[ERROR]: Ошибка создания HTTP-запроса:", err)
 		http.Error(w, "Ошибка при формировании запроса", http.StatusInternalServerError)
@@ -56,7 +61,12 @@ func DoneTask(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Ошибка при выполнении запроса к серверу", http.StatusInternalServerError)
 		return
 	}
-	defer resp.Body.Close()
+
+	defer func() {
+		if err = resp.Body.Close(); err != nil {
+			log.Println("[ERROR]: Ошибка во время закрытия соединения!", err)
+		}
+	}()
 
 	// Проверяем статус ответа от сервера
 	if resp.StatusCode != http.StatusOK {
