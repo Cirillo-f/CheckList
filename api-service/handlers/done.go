@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/Cirillo-f/CheckList/api-service/models"
 )
@@ -30,7 +31,12 @@ func DoneTask(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Создаем URL к которому мы будем делать пост запрос
-	URL := "http://localhost:8081/done"
+	URL := os.Getenv("DB_SERVICE_URL") + "/done"
+	if URL == "" {
+		URL = "http://localhost:8081" + "/done"
+	}
+
+
 
 	// При помощи Marshal сериализуем переменную dStatus
 	jsonIDTask, err := json.Marshal(dStatus)

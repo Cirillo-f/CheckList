@@ -1,0 +1,34 @@
+services:
+  db-service:
+    image: db-service:local
+    container_name: db-service
+    build:
+      context: ./db-service  # Указываем путь к папке db-service
+      dockerfile: Dockerfile  # Указываем Dockerfile внутри db-service
+    ports:
+      - "8081:8081"  # Пробрасываем порт DB-сервиса
+    env_file:
+      - ./db-service/.env  # Используем .env из папки db-service
+    networks:
+      - my-network
+
+  api-service:
+    image: api-service:local
+    container_name: api-service
+    build:
+      context: ./api-service  # Указываем путь к папке api-service
+      dockerfile: Dockerfile  # Указываем Dockerfile внутри api-service
+    ports:
+      - "8080:8080"  # Пробрасываем порт API-сервиса
+    env_file:
+      - ./api-service/.env  # Используем .env из папки api-service
+    environment:
+      - DB_SERVICE_URL=http://db-service:8081  # URL для обращения к DB-сервису
+    depends_on:
+      - db-service  # Запускать только после DB-сервиса
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge
