@@ -4,12 +4,16 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 )
 
 // [GET] /list
 func GetList(w http.ResponseWriter, _ *http.Request) {
 	// URL для получения списка задач из DB-сервиса
-	URL := "http://localhost:8081/list"
+	URL := os.Getenv("DB_SERVICE_URL") + "/list"
+	if URL == "" {
+		URL = "http://localhost:8081" + "/list"
+	}
 
 	// Отправляем GET-запрос к DB-сервису
 	resp, err := http.Get(URL)

@@ -33,7 +33,7 @@ func main() {
 		log.Fatal("[ERROR]: Ошибка загрузки файлов из .env $", err)
 	}
 
-	log.Println("DB-service is listening on$ http://localhost:" + os.Getenv("PORT_SERVICE"))
+	log.Println("[SUCCES]:Бд-сервис запущен на http://localhost:" + os.Getenv("PORT_SERVICE"))
 	err = http.ListenAndServe(":"+os.Getenv("PORT_SERVICE"), dbAPP)
 	if err != nil {
 		log.Fatal("[ERROR]: Ошибка запуска сервера $", err)

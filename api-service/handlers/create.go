@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/Cirillo-f/CheckList/api-service/models"
 )
@@ -36,10 +37,13 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// URL для создания задачи в DB-сервисе
-	requestURL := "http://localhost:8081/create"
+	URL := os.Getenv("DB_SERVICE_URL") + "/create"
+	if URL == "" {
+		URL = "http://localhost:8081" + "/create"
+	}
 
 	// Отправляем POST-запрос к DB-сервису
-	resp, err := http.Post(requestURL, "application/json", bytes.NewBuffer(jsonNewTask))
+	resp, err := http.Post(URL, "application/json", bytes.NewBuffer(jsonNewTask))
 	if err != nil {
 		log.Printf("[ERROR]: Ошибка при отправке запроса к DB-сервису: %v\n", err)
 		http.Error(w, "Ошибка при обращении к DB-сервису", http.StatusInternalServerError)

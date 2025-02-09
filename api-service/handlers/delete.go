@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/Cirillo-f/CheckList/api-service/models"
 )
@@ -30,7 +31,10 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	// Создаем URL к которому мы будем делать DELETE запрос
-	URL := "http://localhost:8081/delete"
+	URL := os.Getenv("DB_SERVICE_URL") + "/delete"
+	if URL == "" {
+		URL = "http://localhost:8081" + "/delete"
+	}
 
 	// При помощи Marshal сериализуем пременную task_id
 	jsonIDTask, err := json.Marshal(taskID)

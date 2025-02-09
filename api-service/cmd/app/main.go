@@ -25,7 +25,7 @@ func main() {
 	if err != nil {
 		log.Fatal("[ERROR]: Ошибка загрузки файлов .env", err)
 	}
-	log.Println("Сервер запущен на http://localhost:" + os.Getenv("PORT"))
+	log.Println("[SUCCES]:Апи-сервис запущен на http://localhost:" + os.Getenv("PORT"))
 
 	err = http.ListenAndServe(":"+os.Getenv("PORT"), router)
 	if err != nil {
